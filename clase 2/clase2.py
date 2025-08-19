@@ -16,3 +16,4 @@ print(aprobados_df)
 aprobados_df.to_csv('aprobados.csv', index=False)
 
 print("\nLos estudiantes que han pasado se han guardado en 'aprobados.csv'")
+print("\nnelson no paso")
