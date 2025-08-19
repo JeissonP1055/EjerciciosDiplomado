@@ -2,7 +2,7 @@ import pandas as pd
 
 data = {'Nombre': ['Jeisson', 'Brandon', 'Bairon', 'Samantha', 'Alejandro'],
         'Edad': [20, 21, 19, 22, 20],
-        'Nota1': [2.5, 3.0, 3.5, 2.0, 4.0],
+        'Nota1': [4.5, 3.0, 3.5, 2.0, 4.0],
         'Nota2': [3.0, 3.5, 4.0, 2.5, 4.5]}
 df = pd.DataFrame(data)
 
