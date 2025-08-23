@@ -1,0 +1,9 @@
+{
+  "filas_finales": 180,
+  "n_sucursales": 4,
+  "n_categorias": 4,
+  "total_ingresos": 459991000.0,
+  "tasa_outliers": 0.005555555555555556,
+  "top_sucursal": "CALI",
+  "top_categoria": "ALIMENTOS"
+}
