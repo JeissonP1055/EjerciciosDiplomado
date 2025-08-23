@@ -1,0 +1,5 @@
+1.la sucursal de cali fue la que mas facturo
+2.la categoría de alimentos fue la mas rentable
+3.el mes que mayor ingreso tuvo fue enero de 2024
+4.el ingreso promedio por transacción fue de aprox 2.55 millones
+5.aunque los alimentos dominan la categoría los demás aportan ingresos significativos
