@@ -1,0 +1,549 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Rifa Viaje Universitario — 100 números</title>
+  <meta name="theme-color" content="#0b1221">
+  <style>
+    :root{
+      --bg:#0b1221; --bg2:#0e172f; --card:#111a33; --muted:#9fb0c5; --text:#edf2ff;
+      --accent:#5eead4; --accent2:#60a5fa; --danger:#ff7b7b; --ok:#86efac; --warning:#fde68a;
+      --border:#192549; --chip:#0f1c3d;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:radial-gradient(1200px 600px at 0% -10%, #122044 0%, #0b1221 60%),
+                             radial-gradient(1200px 600px at 100% 110%, #0e1a36 0%, #0b1221 70%);
+              color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Helvetica,Arial,sans-serif}
+    header{padding:16px 20px;position:sticky;top:0;background:linear-gradient(to bottom,rgba(11,18,33,.95),rgba(11,18,33,.65) 70%,transparent);backdrop-filter: blur(10px);z-index:10;border-bottom:1px solid var(--border)}
+    h1{font-size:20px;margin:0 0 6px 0; letter-spacing:.2px}
+    .muted{color:var(--muted)}
+    .row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+    .pill{padding:6px 10px;border-radius:999px;background:var(--chip); border:1px solid var(--border); font-size:12px}
+    #wrap{padding:12px 14px 90px;max-width:980px;margin:0 auto}
+    .card{background:linear-gradient(180deg, rgba(96,165,250,.05), rgba(94,234,212,.05)),
+                     var(--card);
+          border:1px solid var(--border);border-radius:16px;padding:14px;margin:12px 0; box-shadow:0 10px 30px rgba(0,0,0,.18)}
+    .grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+    @media (min-width:640px){.grid{grid-template-columns:repeat(10,1fr)}}
+    .num{border:1px solid var(--border);background:linear-gradient(180deg,#0f1b3a 0%, #0c152b 100%);
+         border-radius:12px;padding:12px 8px;text-align:center;cursor:pointer;user-select:none;transition:transform .05s, box-shadow .2s}
+    .num:hover{box-shadow:0 6px 20px rgba(96,165,250,.15)}
+    .num:active{transform:scale(.98)}
+    .num small{display:block;color:var(--muted);font-size:10px;margin-top:2px}
+    .vendido{background:linear-gradient(180deg,#17213f 0%, #121b32 100%); color:#aab8d6; border-color:#233461; text-decoration:none; position:relative}
+    .vendido .badge{position:absolute; top:6px; right:6px; font-size:10px; padding:2px 6px; border-radius:8px; background:#0e1b39; color:#bcd0ff; border:1px solid #243a72}
+    .status{font-size:10px; margin-top:4px}
+    .paid{color:var(--ok)} .unpaid{color:var(--warning)}
+    button, .btn{appearance:none;border:none;background:linear-gradient(180deg, var(--accent), var(--accent2));color:#021217;font-weight:800;padding:12px 14px;border-radius:12px;font-size:16px;cursor:pointer}
+    .btnSecondary{background:linear-gradient(180deg, #1b2a52, #142341); color:#dfe8ff; border:1px solid #213362}
+    .btnDanger{background:linear-gradient(180deg, #ff9c9c, #ff7b7b); color:#2b0000}
+    .btnGhost{background:transparent; color:#c9d7ff; border:1px solid var(--border)}
+    form label{display:block;font-size:13px;color:#cbd5e1;margin:10px 0 6px}
+    input, textarea, select{width:100%;padding:12px;border-radius:10px;border:1px solid var(--border);background:#0a142c;color:#fff;font-size:16px}
+    .modal{position:fixed;inset:0; display:none; align-items:flex-end}
+    .sheet{width:100%; background:linear-gradient(180deg, rgba(96,165,250,.07), rgba(94,234,212,.07)), var(--bg2);
+           border-radius:16px 16px 0 0; padding:16px; box-shadow:0 -10px 50px rgba(0,0,0,.35); border:1px solid var(--border)}
+    .sheet h3{margin:0 0 8px 0}
+    .center{display:flex;justify-content:center;align-items:center}
+    .space{height:12px}
+    .footer{position:fixed; bottom:0; left:0; right:0; padding:8px 12px; background:linear-gradient(to top, rgba(11,18,33,.95), rgba(11,18,33,.35)); display:flex; gap:8px; justify-content:center; border-top:1px solid var(--border)}
+    a{color:#a7f3d0}
+    .toolbar{display:flex;flex-wrap:wrap; gap:8px}
+    .hint{font-size:12px; color:var(--muted)}
+    .flex{display:flex; gap:8px; align-items:center}
+    .right{margin-left:auto}
+    .logoPreview{width:64px;height:64px;border-radius:12px;border:1px dashed #2b3b70; display:flex; align-items:center; justify-content:center; overflow:hidden; background:#0b1430}
+    .logoPreview img{max-width:100%; max-height:100%}
+    .divider{height:1px;background:linear-gradient(90deg, transparent, #213151, transparent); margin:8px 0}
+    .list{display:grid; gap:10px}
+    .listItem{display:flex; align-items:center; justify-content:space-between; background:#0d1831; border:1px solid var(--border); border-radius:12px; padding:10px 12px}
+    .badgeInfo{padding:4px 6px; border-radius:8px; font-size:11px; background:#142752; border:1px solid #21386b; color:#bcd0ff}
+    canvas{display:none}
+  </style>
+</head>
+<body>
+<header>
+  <h1>Rifa: Viaje Universitario — 100 números</h1>
+  <div class="row">
+    <div class="pill" id="soldCount">0 / 100 vendidos</div>
+    <div class="pill">Premio: <span id="premioLabel">$1.000.000</span></div>
+    <div class="pill">Cierra: <span id="deadlineLabel">–</span></div>
+    <div class="pill">Admin: <span id="adminLabel">WhatsApp</span></div>
+  </div>
+</header>
+
+<div id="wrap">
+  <div class="card">
+    <div class="toolbar">
+      <button class="btnSecondary" id="btnSettings">⚙️ Ajustes</button>
+      <button class="btnSecondary" id="btnExport">⬇️ Exportar</button>
+      <button class="btnSecondary" id="btnImport">⬆️ Importar</button>
+      <button class="btnSecondary" id="btnRemind">🔔 Enviar recordatorios</button>
+      <button class="btnDanger right" id="btnReset">🧹 Limpiar</button>
+    </div>
+    <p class="hint">Toca un número para venderlo. Puedes marcar <b>Pagado</b> o dejarlo <b>Pendiente</b>. Se guarda en tu teléfono y puedes compartir el <b>ticket con imagen</b> por WhatsApp.</p>
+  </div>
+
+  <div class="card">
+    <div class="grid" id="grid"></div>
+  </div>
+
+  <div class="card" id="listCard" style="display:none">
+    <div class="flex"><strong>Compradores</strong> <span class="right badgeInfo" id="unpaidBadge">0 pendientes</span></div>
+    <div class="divider"></div>
+    <div class="list" id="buyersList"></div>
+  </div>
+</div>
+
+<div class="footer">
+  <button id="btnShare" class="btn">Compartir esta página</button>
+</div>
+
+<!-- Modal vender -->
+<div class="modal" id="modalBuy">
+  <div class="sheet">
+    <h3 id="sheetTitle">Vender número</h3>
+    <form id="buyForm">
+      <input type="hidden" id="numeroSel">
+      <label>Nombre comprador</label>
+      <input id="nombre" required placeholder="Ej: Ana Pérez">
+      <label>WhatsApp comprador (con +57)</label>
+      <input id="telefono" required placeholder="+57 3xx xxx xxxx" inputmode="tel">
+      <div class="flex">
+        <label class="flex" style="gap:6px;margin:10px 0">
+          <input type="checkbox" id="pagado">
+          <span>Pagado</span>
+        </label>
+        <span class="hint">Si no está pago, se puede recordar por WhatsApp luego.</span>
+      </div>
+      <div class="space"></div>
+      <button class="btn" type="submit">Guardar, compartir ticket e iniciar WhatsApp</button>
+      <div class="space"></div>
+      <div class="hint">Se abrirá el menú de compartir con la <b>imagen del número</b> y mensaje; luego WhatsApp para enviar. (Automático sin tocar no es posible en el celular.)</div>
+      <div class="space"></div>
+      <button class="btnGhost" type="button" id="cancelBuy">Cancelar</button>
+    </form>
+  </div>
+</div>
+
+<!-- Modal ajustes -->
+<div class="modal" id="modalSettings">
+  <div class="sheet">
+    <h3>⚙️ Ajustes</h3>
+    <div class="flex" style="gap:12px; align-items:flex-end">
+      <div>
+        <label>Logo (opcional)</label>
+        <div class="logoPreview" id="logoPreview">Logo</div>
+        <input type="file" id="logoFile" accept="image/*" style="margin-top:6px">
+      </div>
+      <div style="flex:1">
+        <label>Título de la rifa</label>
+        <input id="titulo" placeholder="Rifa Viaje Universitario">
+        <label>Premio (texto)</label>
+        <input id="premio" placeholder="$1.000.000 COP">
+        <label>WhatsApp admin (con +57)</label>
+        <input id="admin" placeholder="+57 3xx xxx xxxx" inputmode="tel">
+        <label>Fecha y hora de cierre</label>
+        <input id="deadline" type="datetime-local">
+      </div>
+    </div>
+    <div class="space"></div>
+    <button class="btn" id="saveSettings">Guardar</button>
+    <div class="space"></div>
+    <button class="btnGhost" id="closeSettings">Cerrar</button>
+  </div>
+</div>
+
+<!-- Modal importar -->
+<div class="modal" id="modalImport">
+  <div class="sheet">
+    <h3>⬆️ Importar lista</h3>
+    <p class="hint" style="margin-top:-6px">Pega aquí el JSON exportado desde otro teléfono.</p>
+    <textarea id="importData" style="width:100%;height:160px"></textarea>
+    <div class="space"></div>
+    <button class="btn" id="doImport">Importar</button>
+    <div class="space"></div>
+    <button class="btnGhost" id="closeImport">Cerrar</button>
+  </div>
+</div>
+
+<canvas id="ticketCanvas" width="1080" height="1350"></canvas>
+
+<script>
+const $ = s=>document.querySelector(s);
+const grid = $('#grid');
+const soldCount = $('#soldCount');
+const premioLabel = $('#premioLabel');
+const adminLabel = $('#adminLabel');
+const deadlineLabel = $('#deadlineLabel');
+const buyersList = $('#buyersList');
+const listCard = $('#listCard');
+const unpaidBadge = $('#unpaidBadge');
+
+const modalBuy = $('#modalBuy');
+const modalSettings = $('#modalSettings');
+const modalImport = $('#modalImport');
+
+// --- STATE ---
+const state = {
+  titulo: localStorage.getItem('titulo') || 'Rifa Viaje Universitario',
+  premio: localStorage.getItem('premio') || '$1.000.000 COP',
+  admin: localStorage.getItem('admin') || '+57 3027192343',
+  deadline: localStorage.getItem('deadline') || '',
+  logo: localStorage.getItem('logo') || '', // dataURL
+  ventas: JSON.parse(localStorage.getItem('rifaVentasV2')||'[]') // [{n, nombre, tel, pagado, t}]
+};
+
+function saveState(){
+  localStorage.setItem('titulo', state.titulo);
+  localStorage.setItem('premio', state.premio);
+  localStorage.setItem('admin', state.admin);
+  localStorage.setItem('deadline', state.deadline);
+  localStorage.setItem('logo', state.logo);
+  localStorage.setItem('rifaVentasV2', JSON.stringify(state.ventas));
+  updateHeader();
+}
+
+function updateHeader(){
+  premioLabel.textContent = state.premio;
+  adminLabel.textContent = state.admin;
+  soldCount.textContent = `${state.ventas.length} / 100 vendidos`;
+  deadlineLabel.textContent = state.deadline ? new Date(state.deadline).toLocaleString() : '–';
+  $('#logoPreview').innerHTML = state.logo ? `<img src="${state.logo}" alt="logo">` : 'Logo';
+  $('#titulo').value = state.titulo;
+  $('#premio').value = state.premio;
+  $('#admin').value = state.admin;
+  $('#deadline').value = state.deadline ? toInputDateTime(new Date(state.deadline)) : '';
+}
+
+function toInputDateTime(d){
+  const pad = n=> String(n).padStart(2,'0');
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function isSold(n){ return state.ventas.some(v=>v.n===n); }
+function getSale(n){ return state.ventas.find(v=>v.n===n); }
+
+function render(){
+  grid.innerHTML='';
+  for(let i=0;i<100;i++){
+    const s = getSale(i);
+    const d=document.createElement('div');
+    d.className='num'+(s?' vendido':'');
+    const numDisplay = String(i).padStart(2,'0'); // Nuevo formato 00-99
+    const status = s ? (s.pagado ? '<span class="status paid">Pagado ✔</span>' : '<span class="status unpaid">Pendiente ⏳</span>') : '<small>Disponible</small>';
+    d.innerHTML = `<div style="font-size:18px;font-weight:800">${numDisplay}</div>
+                   ${s ? `<small>${s.nombre || ''}</small>` : ''}
+                   ${status}
+                   ${s ? `<div class="badge">${s.pagado?'Vendido':'Reservado'}</div>`:''}`;
+    d.onclick=()=> openBuy(i);
+    grid.appendChild(d);
+  }
+  updateHeader();
+  renderBuyersList();
+}
+
+function renderBuyersList(){
+  buyersList.innerHTML='';
+  if(state.ventas.length===0){ listCard.style.display='none'; return; }
+  listCard.style.display='block';
+  let unpaid = 0;
+  state.ventas
+    .slice()
+    .sort((a,b)=>a.n-b.n)
+    .forEach(v=>{
+      if(!v.pagado) unpaid++;
+      const it=document.createElement('div');
+      it.className='listItem';
+      it.innerHTML = `<div>
+        <div style="font-weight:700">#${v.n} — ${v.nombre||''}</div>
+        <div class="hint">${v.tel}</div>
+      </div>
+      <div class="flex">
+        <span class="badgeInfo">${v.pagado?'Pagado':'Pendiente'}</span>
+        <button class="btnGhost" data-action="toggle">${v.pagado?'Marcar pendiente':'Marcar pagado'}</button>
+        <button class="btnSecondary" data-action="ticket">🎟 Ticket</button>
+        <button class="btn" data-action="msg">WhatsApp</button>
+      </div>`;
+      it.querySelector('[data-action="toggle"]').onclick=()=>{
+        v.pagado = !v.pagado;
+        saveState(); render();
+      };
+      it.querySelector('[data-action="ticket"]').onclick=()=>{
+        generateAndShareTicket(v);
+      };
+      it.querySelector('[data-action="msg"]').onclick=()=>{
+        openWhatsAppForBuyer(v, false);
+      };
+      buyersList.appendChild(it);
+    });
+  unpaidBadge.textContent = `${unpaid} pendientes`;
+}
+
+function openBuy(n){
+  const s=getSale(n) || {n, nombre:'', tel:'', pagado:false};
+  $('#sheetTitle').textContent= (isSold(n)? 'Editar número ':'Vender número ') + n;
+  $('#numeroSel').value=n;
+  $('#nombre').value=s.nombre;
+  $('#telefono').value=s.tel;
+  $('#pagado').checked=!!s.pagado;
+  modalBuy.style.display='flex';
+}
+function closeBuy(){ modalBuy.style.display='none'; }
+$('#cancelBuy').onclick=closeBuy;
+
+$('#buyForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const n=parseInt($('#numeroSel').value,10);
+  const nombre=$('#nombre').value.trim();
+  let tel=$('#telefono').value.trim().replace(/\s+/g,'');
+  const pagado=$('#pagado').checked;
+  if(!/^\+?\d{8,15}$/.test(tel)){ alert('Número de WhatsApp inválido. Usa formato internacional, ej: +57XXXXXXXXXX'); return; }
+  if(tel[0] !== '+') tel='+'+tel;
+
+  // Guardar/actualizar
+  const existing = getSale(n);
+  if(existing){
+    existing.nombre=nombre; existing.tel=tel; existing.pagado=pagado;
+  }else{
+    state.ventas.push({n, nombre, tel, pagado, t:Date.now()});
+  }
+  saveState();
+  render();
+  closeBuy();
+
+  // Generar ticket e intentar compartir con mensaje + abrir WhatsApp
+  const sale = getSale(n);
+  await generateAndShareTicket(sale, true);
+});
+
+// --- SETTINGS ---
+$('#btnSettings').onclick=()=>{ modalSettings.style.display='flex'; };
+$('#closeSettings').onclick=()=> modalSettings.style.display='none';
+$('#saveSettings').onclick=()=>{
+  state.titulo = $('#titulo').value.trim() || state.titulo;
+  state.premio = $('#premio').value.trim() || state.premio;
+  state.admin  = $('#admin').value.trim()  || state.admin;
+  state.deadline = $('#deadline').value;
+  saveState();
+  modalSettings.style.display='none';
+  alert('Ajustes guardados.');
+};
+
+// Logo upload
+$('#logoFile').addEventListener('change', (e)=>{
+  const file=e.target.files[0];
+  if(!file) return;
+  const reader=new FileReader();
+  reader.onload=()=>{
+    state.logo = reader.result;
+    saveState();
+  };
+  reader.readAsDataURL(file);
+});
+
+// --- EXPORT / IMPORT / RESET ---
+$('#btnExport').onclick=()=>{
+  const data = JSON.stringify(state, null, 2);
+  navigator.clipboard.writeText(data).then(()=>alert('Copiado al portapapeles. Pégalo donde quieras para respaldo.'));
+};
+$('#btnImport').onclick=()=>{ $('#importData').value=''; modalImport.style.display='flex'; };
+$('#closeImport').onclick=()=> modalImport.style.display='none';
+$('#doImport').onclick=()=>{
+  try{
+    const o = JSON.parse($('#importData').value);
+    if(!o || !Array.isArray(o.ventas)) throw new Error('Formato inválido');
+    state.titulo = o.titulo || state.titulo;
+    state.premio = o.premio || state.premio;
+    state.admin  = o.admin  || state.admin;
+    state.deadline = o.deadline || state.deadline;
+    state.logo  = o.logo  || state.logo;
+    state.ventas = o.ventas.filter(v=>v && Number.isInteger(v.n) && v.n>=1 && v.n<=100)
+                           .map(v=>({n:v.n, nombre:v.nombre||'', tel:v.tel||'', pagado:!!v.pagado, t:v.t||Date.now()}));
+    saveState();
+    render();
+    modalImport.style.display='none';
+    alert('Importado correctamente.');
+  }catch(err){
+    alert('No se pudo importar: '+err.message);
+  }
+};
+
+$('#btnReset').onclick=()=>{
+  if(confirm('Esto borra TODAS las ventas guardadas en este teléfono.')){
+    state.ventas = [];
+    saveState();
+    render();
+  }
+};
+
+// --- SHARE PAGE ---
+$('#btnShare').onclick=async()=>{
+  if(navigator.share){
+    try{ await navigator.share({title:state.titulo, text:`Participa en mi ${state.titulo} — Premio ${state.premio}`, url:location.href}); }catch{}
+  }else{
+    alert('Copia esta URL para compartir: '+location.href);
+  }
+};
+
+// --- REMINDERS ---
+$('#btnRemind').onclick=async()=>{
+  const now = Date.now();
+  const deadline = state.deadline ? new Date(state.deadline).getTime() : null;
+  const pending = state.ventas.filter(v=>!v.pagado);
+  if(pending.length===0){ alert('No hay compradores pendientes.'); return; }
+  let intro='';
+  if(deadline){
+    const hrs = Math.max(0, Math.round((deadline-now)/3600000));
+    intro = hrs<=48 ? `⏰ ¡Queda poco tiempo! ${hrs}h para el cierre.` : '';
+  }
+  // Secuencia: por cada pendiente, abrir wa.me con mensaje (el usuario envía y regresa)
+  if(!confirm(`Se abrirán mensajes de WhatsApp para ${pending.length} comprador(es) con recordatorio de pago.\n${intro ? intro : ''}\nDebes presionar "Enviar" para cada uno.`)) return;
+  for(const v of pending){
+    await openWhatsAppForBuyer(v, true);
+    // Pausa pequeña para permitir abrir app
+    await sleep(600);
+  }
+};
+
+function sleep(ms){ return new Promise(r=>setTimeout(r, ms)); }
+
+// --- TICKET IMAGE ---
+async function generateAndShareTicket(sale, alsoOpenWhatsApp=false){
+  const file = await drawTicket(sale);
+  const message = `🎉 ${sale.nombre}, gracias por colaborar con el *${state.titulo}*.\nTu número es *${sale.n}* — Premio ${state.premio}.\n¡Suerte 🍀!`;
+  if(navigator.canShare && navigator.canShare({files:[file]})){
+    try{
+      await navigator.share({title:`Ticket #${sale.n}`, text:message, files:[file]});
+    }catch{ /* usuario canceló */ }
+  }else{
+    // Fallback: descarga
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(file);
+    a.download=`Ticket_${sale.n}.png`;
+    a.click();
+    alert('Se descargó el ticket como imagen. Ahora puedes enviarlo por WhatsApp manualmente.');
+  }
+  if(alsoOpenWhatsApp){
+    openWhatsAppForBuyer(sale, false, message);
+  }
+}
+
+async function openWhatsAppForBuyer(sale, isReminder=false, customMessage=''){
+  const baseMsg = isReminder
+    ? `👋 Hola ${sale.nombre}. Te recuerdo tu aporte del ${state.titulo}.%0AReservaste el *número ${sale.n}* para la rifa (Premio ${encodeURIComponent(state.premio)}).%0A¿Me confirmas el pago por favor? Gracias 🙌`
+    : (customMessage ? encodeURIComponent(customMessage) :
+       `🎉 ¡Felicidades ${encodeURIComponent(sale.nombre)}!%0AHas comprado el *número ${sale.n}* para la rifa de ${encodeURIComponent(state.premio)}.%0A¡Mucha suerte! 🍀`);
+  const urlBuyer = `https://wa.me/${encodeURIComponent(sale.tel.replace('+',''))}?text=${baseMsg}`;
+  location.href = urlBuyer;
+}
+
+// Drawing the ticket on canvas
+async function drawTicket(sale){
+  const canvas = $('#ticketCanvas');
+  const ctx = canvas.getContext('2d');
+  // Background
+  ctx.fillStyle = '#0b1221';
+  ctx.fillRect(0,0,canvas.width, canvas.height);
+  // gradient
+  const g = ctx.createLinearGradient(0,0,0,canvas.height);
+  g.addColorStop(0,'#13244b');
+  g.addColorStop(1,'#0b1221');
+  ctx.fillStyle = g; ctx.fillRect(40,40, canvas.width-80, canvas.height-80);
+  // border
+  ctx.strokeStyle = '#2a3b6f'; ctx.lineWidth = 6; ctx.strokeRect(40,40, canvas.width-80, canvas.height-80);
+  // title
+  ctx.fillStyle = '#a7f3d0';
+  ctx.font = 'bold 64px system-ui';
+  ctx.fillText(state.titulo, 80, 150);
+  // prize ribbon
+  ctx.fillStyle = '#60a5fa';
+  roundRect(ctx, 80, 180, 560, 64, 16, true);
+  ctx.fillStyle = '#051227'; ctx.font = 'bold 40px system-ui'; ctx.fillText(`Premio ${state.premio}`, 100, 225);
+  // number big
+// number big
+ctx.fillStyle = '#ffffff';
+ctx.font = '900 200px system-ui';
+const numText = `#${String(sale.n).padStart(2, '0')}`; // <-- Línea modificada
+ctx.fillText(numText, 80, 430);
+  // name
+  ctx.fillStyle = '#cfe5ff';
+  ctx.font = 'bold 44px system-ui';
+  ctx.fillText(`Para: ${sale.nombre}`, 80, 500);
+  // details
+  ctx.font = '28px system-ui'; ctx.fillStyle='#b7c7e6';
+  const d = new Date();
+  ctx.fillText(`Fecha: ${d.toLocaleDateString()} ${d.toLocaleTimeString()}`, 80, 550);
+  ctx.fillText(`Admin: ${state.admin}`, 80, 590);
+  // badge paid/pending
+  ctx.fillStyle = sale.pagado ? '#86efac' : '#fde68a';
+  roundRect(ctx, 80, 630, 220, 48, 12, true);
+  ctx.fillStyle = sale.pagado ? '#053014' : '#3a2e00';
+  ctx.font='bold 28px system-ui';
+  ctx.fillText(sale.pagado?'PAGADO':'PENDIENTE', 102, 663);
+  // message bottom
+  ctx.fillStyle='#8adcf0'; ctx.font='bold 36px system-ui';
+  ctx.fillText('¡Gracias por apoyar nuestro Viaje Universitario! 🧳', 80, 730);
+  ctx.fillStyle='#c9d7ff'; ctx.font='28px system-ui';
+  ctx.fillText('¡Recuerda que la fecha de la rifa es el dia 18 de octubre del 2025', 80, 780);
+  ctx.fillText('y juega con las dos ultimas cifras de la loteria de Boyacá!', 80, 815);
+  // logo (if set)
+  if(state.logo){
+    await drawLogo(ctx, state.logo, canvas.width-80-220, 100, 220, 220);
+  }
+  // QR-like decoration
+  drawDecor(ctx, canvas.width-80-180, canvas.height-80-180, 140);
+
+  // Convert to file
+  const blob = await new Promise(res=> canvas.toBlob(res, 'image/png', 0.95));
+  return new File([blob], `Ticket_${sale.n}.png`, {type:'image/png'});
+}
+
+function drawDecor(ctx, x, y, size){
+  ctx.strokeStyle='#2a3b6f'; ctx.lineWidth=3;
+  ctx.strokeRect(x, y, size, size);
+  for(let i=0;i<6;i++){
+    ctx.strokeRect(x+10*i, y+10*i, size-20*i, size-20*i);
+  }
+}
+
+function roundRect(ctx, x,y,w,h,r,fill){
+  ctx.beginPath();
+  ctx.moveTo(x+r, y);
+  ctx.arcTo(x+w, y, x+w, y+h, r);
+  ctx.arcTo(x+w, y+h, x, y+h, r);
+  ctx.arcTo(x, y+h, x, y, r);
+  ctx.arcTo(x, y, x+w, y, r);
+  ctx.closePath();
+  if(fill) ctx.fill(); else ctx.stroke();
+}
+
+function drawLogo(ctx, dataURL, x, y, w, h){
+  return new Promise((resolve)=>{
+    const img = new Image();
+    img.onload=()=>{
+      // draw rounded container
+      ctx.fillStyle='#0a132a'; roundRect(ctx, x, y, w, h, 24, true);
+      // fit image
+      const ratio = Math.min((w-20)/img.width, (h-20)/img.height);
+      const iw = img.width * ratio, ih = img.height * ratio;
+      const ix = x + (w - iw)/2, iy = y + (h - ih)/2;
+      ctx.drawImage(img, ix, iy, iw, ih);
+      resolve();
+    };
+    img.src = dataURL;
+  });
+}
+
+// close modals by tapping background
+[modalBuy, modalSettings, modalImport].forEach(m=> m.addEventListener('click', e=>{ if(e.target===m) m.style.display='flex' ? null : null; }));
+// Prevent accidental close when clicking background: toggle display properly
+[modalBuy, modalSettings, modalImport].forEach(m=> m.addEventListener('mousedown', e=>{ if(e.target===m) m.style.display='none'; }));
+
+// INIT
+render();
+saveState();
+</script>
+</body>
+</html>
